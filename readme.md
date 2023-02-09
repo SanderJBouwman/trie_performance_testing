@@ -9,7 +9,7 @@ varying in length from 3 to 20 characters. For each character length 15 words wi
 The time it takes to find all individual words with the two algorithms will be inserted into a table. The table will also contain
 this table can then be downloaded for further analysis.
 
-[![example](https://github.com/devalk96/trie_performance_testing/blob/master/example.jpg)]
+![example](https://github.com/devalk96/trie_performance_testing/blob/master/example.jpg)
 
 ## usage
 Open HTML file in browser and wait for the script to finish. The table will be displayed and can be downloaded.
