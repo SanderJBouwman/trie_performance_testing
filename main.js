@@ -292,7 +292,7 @@ function runTest() {
         updateResults(results);
         // set the data running to false
         $button.data("running", false)
-            .text("Run test")
+            .text("Rerun test")
             .prop("disabled", false);
 
     });
