@@ -158,7 +158,7 @@ function updateResults(results){
  */
 function loadData() {
     return new Promise((resolve, reject) => {
-        fetch('words_alpha.txt')
+        fetch('https://raw.githubusercontent.com/devalk96/trie_performance_testing/master/words_alpha.txt')
             .then(response => response.text())
             .then(text => {
                 items = text.split('\n');
@@ -168,7 +168,7 @@ function loadData() {
                 console.log(error);
                 reject(false);
             }).then(() => {
-        console.log("Data loaded successfully");
+        console.log("Data loaded successfully from: https://raw.githubusercontent.com/devalk96/trie_performance_testing/master/words_alpha.txt");
         console.log(`Loaded ${items.length} words`);
     })
 
