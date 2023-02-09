@@ -1,7 +1,6 @@
 # trie performance testing
 
-## Information
-### Introduction
+## Introduction
 This module was used for a project in order to compare the performance of a trie search versus regular search.
 This script uses the https://github.com/dwyl/english-words module to generate a list of words (400.000+ words) to search through.
 When the HTML file is opened in browser a script will run which will create a random list of words
