@@ -9,8 +9,20 @@
 
 </head>
 <body>
-<!--Create a text input -->
-<button type="button" class="btn btn-primary"  id = "runTest" onclick="runTest()">Reset</button>
+
+
+<div class="d-flex justify-content-center">
+    <div class="container">
+        <button type="button" class="btn btn-primary"  id = "runTestButton" disabled>
+            Run test
+        </button>
+        <button type="button" class="btn btn-primary"  id = "copyTable">
+            Copy table to clipboard
+        </button>
+    </div>
+    <hr class="bg-primary border-2 border-top border-primary">
+</div>
+
 <table id="resultTable" class="table"></table>
 
 <script type="text/javascript" src="main.js"></script>

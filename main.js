@@ -1,14 +1,32 @@
+/**
+ * @file main.js
+ *
+ * @desc A JavaScript file that implements Trie and TrieNode data structures, along with helper functions.
+ */
 
 let items = [];
 let results = [];
 let ready = false
 
+
+/**
+ * @class Trie - A class that implements a Trie data structure.
+ * @desc This class implements a Trie data structure, with helper functions to insert a word, search for a word, and autocomplete a word.
+ *
+ */
 class Trie {
     constructor() {
         this.root = new TrieNode(null);
         this.resultMap = {}
     }
 
+    /**
+     * @method insert
+     * @desc This function inserts a word into the Trie and stores the corresponding result in the result map.
+     * @param {string} word - The word to be inserted into the Trie.
+     * @param {string} result - The value to be associated with the word.
+     * @returns {void} - This function does not return anything.
+     */
     insert(word, result) {
         word = word.toLowerCase();
         if (word in this.resultMap) {
@@ -25,6 +43,11 @@ class Trie {
         node.isEnd = true;
     }
 
+    /**
+     * @method search
+     * @param word - The word to be searched for in the Trie.
+     * @return {*[]} - Returns an array of results associated with the word.
+     */
     search(word) {
         word = word.toLowerCase()
         let res = [];
@@ -39,6 +62,12 @@ class Trie {
         return res.map(re => this.resultMap[re]);
     }
 
+    /**
+     * @method autocomplete - This function is a helper function for the search function. It recursively traverses the Trie and returns all the words that are associated with the given node.
+     * @param node - The node to start the traversal from.
+     * @param res - The array to store the results in.
+     * @param prefix - The prefix that was used to get to the given node.
+     */
     autocomplete(node, res, prefix) {
         if (node.isEnd)
             res.push(prefix + node.data);
@@ -48,8 +77,17 @@ class Trie {
 }
 
 
+/**
+ * @class TrieNode - A class that implements a TrieNode data structure.
+ * @desc This class implements a very simple TrieNode data structure.
+ * @param data - The data to be stored in the TrieNode.
+ * @constructor
+ * @returns {TrieNode} - Returns a TrieNode object.
+ * @property {string} data - The data stored in the TrieNode.
+ * @property {boolean} isEnd - A boolean value that indicates whether the TrieNode is the end of a word.
+ * @property {Map} children - A Map object that stores the children of the TrieNode.
+ */
 class TrieNode {
-
     constructor(character) {
         this.data = character;
         this.isEnd = false;
@@ -59,6 +97,11 @@ class TrieNode {
 
 let trie = new Trie();
 
+/**
+ * @function regularSearch - This function searches for text in a list of words using includes() method. It returns the words that contain the given text.
+ * @param text - The text to be searched for.
+ * @param words - The list of words to search in.
+ */
 function regularSearch(text, items) {
     let searchResults = [];
     for (const item of items) {
@@ -70,11 +113,11 @@ function regularSearch(text, items) {
     return searchResults;
 }
 
-function addResults(result, results) {
-    results.push(result);
-    updateResults(results);
-}
 
+/**
+ * @function updateResults - This function updates the results table. It clears the table and adds the results to the table.
+ * @param results - The array of results to be added to the table.
+ */
 function updateResults(results){
     // get table with id resultTable
     let table = document.getElementById("resultTable");
@@ -109,23 +152,30 @@ function updateResults(results){
 }
 
 
+/**
+ * @function loadData - This function loads the data from the words_alpha.txt file and stores it in the items array.
+ * @returns {Promise<void>} - This function returns a Promise object.
+ */
 function loadData() {
-    fetch('http://localhost:63343/words_alpha.txt')
-        .then(response => response.text())
-        .then((data) => {
-            let lines = data.split("\n");
-            for (const line of lines) {
-                items.push(line.trim());
-            }
-            ready = true;
-        })
-}
+    return new Promise((resolve, reject) => {
+        fetch('words_alpha.txt')
+            .then(response => response.text())
+            .then(text => {
+                items = text.split('\n');
+                resolve(true);
+            })
+            .catch(error => {
+                console.log(error);
+                reject(false);
+            }).then(() => {
+        console.log("Data loaded successfully");
+        console.log(`Loaded ${items.length} words`);
+    })
+
+})}
 
 function clearResults(){
-    // Clear the myInput field
-    document.getElementById("myInput").value = "";
-    results = [];
-    updateResults(results);
+    updateResults([]);
 }
 
 
@@ -147,12 +197,41 @@ function getRandomWords(items, minLength, maxLength, nWords) {
         }
 
     }
-
-    console.log(randomWords);
-
     return randomWords;
 }
 
+/**
+ * @function copyTableToClipboard - This function copies the results table to the clipboard. And changes the copy button text to "Copied".
+ * @param table - The table to be copied.
+ */
+function copyTableToClipboard(table) {
+    // check if table has rows if not alert that there is no data to copy
+    if (table.rows.length === 0){
+        alert("There is no data to copy");
+        return;
+    }
+
+    // Copy to clipboard
+    let urlField = table
+    let range = document.createRange()
+    range.selectNode(urlField)
+    window.getSelection().addRange(range)
+    document.execCommand('copy')
+    window.getSelection().removeAllRanges()
+
+    // change the text of the button to Copied for 2 seconds
+    let copyButton = document.getElementById("copyTable");
+    copyButton.innerHTML = "Copied!";
+    setTimeout(() => {
+        copyButton.innerHTML = "Copy table to clipboard";
+    }, 2000);
+}
+
+/**
+ * @function searchWords - This function searches for words in the items array using the regularSearch() and trie.search() functions. It returns the results in an array.
+ * @param randomWords - The object that contains the random words to be searched for.
+ * @return {*[]} - Returns an array of objects that contain the results.
+ */
 function searchWords(randomWords) {
     // This function will search for the random words and return the results
     let results = [];
@@ -169,45 +248,75 @@ function searchWords(randomWords) {
         let words = randomWords[key];
         for (const word of words) {
             wordN += 1
-            console.log(`Progress: ${wordN}/${totalWords}: Searching for word ${word}`);
+
             let regularTimeStart = window.performance.now()
             let regularResults = regularSearch(word, items);
             let regularTimeSpeed = window.performance.now() - regularTimeStart;
-            addResults({method: "regular", time: regularTimeSpeed, "nItems": regularResults.length, "query": word}, results);
+            results.push({method: "regular", time: regularTimeSpeed, "nItems": regularResults.length, "query": word})
 
             let trieTimeStart = window.performance.now();
             let trieResults = trie.search(word);
             let trieTimeSpeed = window.performance.now() - trieTimeStart;
-            addResults({method: "trie", time: trieTimeSpeed, "nItems": trieResults.length, "query": word}, results);
+            results.push({method: "trie", time: trieTimeSpeed, "nItems": trieResults.length, "query": word})
         }
     }
+    return results;
 }
 
-
+/**
+ * @function runTest - This function runs the test and updates the results table.
+ * @return {*[]}
+ */
 function runTest() {
-    // Disable the button
-    document.getElementById("runTest").disabled = true;
+    $button = $("#runTestButton");
+    $spinner = $("<span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span>");
+    // if the button holds the data running = true we dont want to run the test again
+    if ($button.data("running")){
+        return;
+    }
+
+    // set the data running to true
+    $button.data("running", true).text(" Running...").prop("disabled", true).prepend($spinner);
+
+    // clear the results
+    clearResults();
+
     let minLength = 3;
     let maxLength = 20;
     let nWords = 15;
     let randomWords = getRandomWords(items, minLength, maxLength, nWords);
-    searchWords(randomWords);
-    // Enable the button
-    document.getElementById("runTest").disabled = false;
+
+    // We dont want to block the ui when we run the test
+    setTimeout(() => {
+        let results = searchWords(randomWords);
+        updateResults(results);
+        // set the data running to false
+        $button.data("running", false)
+            .text("Run test")
+            .prop("disabled", false);
+
+    });
+
+    return results;
 }
 
-// On document ready
-$(document).ready(function () {
-    // make a listener that checks if ready is true and if so enables myInput
-    let interval = setInterval(function () {
-        if (ready) {
-            clearInterval(interval);
-            console.log("Loaded " + items.length + " word");
-            runTest();
-        }
-    }, 100);
 
-    loadData();
+$(document).ready(function () {
+    $button = $("#runTestButton");
+    $button.data("running", false);
+    $button.click(function () {
+        runTest();
+    })
+
+    loadData().then(() => {
+        $button.prop("disabled", false);
+    })
+
+    $("#copyTable").click(function () {
+        console.log("copy table");
+        let table = document.getElementById("resultTable");
+        copyTableToClipboard(table);
+    })
 });
 
 
