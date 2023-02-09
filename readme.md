@@ -13,7 +13,7 @@ this table can then be downloaded for further analysis.
 ## usage
 Open HTML file in browser and wait for the script to finish. The table will be displayed and can be downloaded.
   
-Press RESET button to reset the table and start over.
+Press Rerun test button to reset the table and start over.
 
 ## Installation
 Download this repository and open the HTML file in a browser.
