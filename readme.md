@@ -19,4 +19,4 @@ Press Rerun test button to reset the table and start over.
 Download this repository and open the HTML file in a browser.
 
 ## License
-MIT License
+Unlicensed
